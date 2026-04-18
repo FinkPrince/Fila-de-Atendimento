@@ -43,7 +43,6 @@ class Paciente {
                 "-";
     }
 }
-
 public class FilaAtendimento {
 
     static Queue<Paciente> filaPrioritaria = new LinkedList<>();
@@ -63,7 +62,6 @@ public class FilaAtendimento {
         }
         System.out.println("Paciente adicionado: " + p.senha);
     }
-
     public static Paciente chamarPaciente() {
         Paciente p;
 
@@ -101,7 +99,6 @@ public class FilaAtendimento {
                     String plano = sc.nextLine();
                     adicionarPaciente(nome, cpf, plano);
                     break;
-
                 case 2:
                     Paciente p = chamarPaciente();
                     if (p != null) {
