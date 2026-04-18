@@ -1,0 +1,150 @@
+import java.util.*;
+
+class Paciente {
+    String senha;
+    String nome;
+    String cpf;
+    String plano;
+    String tipoConsulta;
+    String medico;
+    String status;
+
+    public Paciente(String senha, String nome, String cpf, String plano) {
+        this.senha = senha;
+        this.nome = nome;
+        this.cpf = cpf;
+        this.plano = plano;
+        this.tipoConsulta = "consulta nao definida";
+        this.medico = "medico nao definido";
+        this.status = "Aguardando";
+    }
+    public void fazerTriagem(String tipo) {
+        this.tipoConsulta = tipo;
+    }
+    public void escolherMedico(String medico) {
+        this.medico = medico;
+    }
+    public void iniciarAtendimento() {
+        this.status = "Em atendimento";
+    }
+    public void encerrar() {
+        this.status = "Finalizado";
+    }
+
+    public String toString() {
+        return "\n-\n" +
+                "Senha: " + senha + "\n" +
+                "Nome: " + nome + "\n" +
+                "CPF: " + cpf + "\n" +
+                "Plano: " + plano + "\n" +
+                "Consulta: " + tipoConsulta + "\n" +
+                "Médico: " + medico + "\n" +
+                "Status: " + status + "\n" +
+                "-";
+    }
+}
+
+public class FilaAtendimento {
+
+    static Queue<Paciente> filaPrioritaria = new LinkedList<>();
+    static Queue<Paciente> filaNormal = new LinkedList<>();
+    static int contador = 1;
+    public static String gerarSenha() {
+        return String.format("A%03d", contador++);
+    }
+
+    public static void adicionarPaciente(String nome, String cpf, String plano) {
+        Paciente p = new Paciente(gerarSenha(), nome, cpf, plano);
+
+        if (plano.equalsIgnoreCase("prioritario")) {
+            filaPrioritaria.add(p);
+        } else {
+            filaNormal.add(p);
+        }
+        System.out.println("Paciente adicionado: " + p.senha);
+    }
+
+    public static Paciente chamarPaciente() {
+        Paciente p;
+
+        if (!filaPrioritaria.isEmpty()) {
+            p = filaPrioritaria.poll();
+        } else {
+            p = filaNormal.poll();
+        }
+        if (p != null) {
+            System.out.println("\nChamando paciente: " + p.senha + " - " + p.nome);
+        } else {
+            System.out.println("Fila vazia!");
+        }
+        return p;
+    }
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        int opcao;
+        do {
+            System.out.println("\n=== SISTEMA DE ATENDIMENTO ===");
+            System.out.println("1 - Novo Paciente");
+            System.out.println("2 - Chamar Paciente");
+            System.out.println("3 - Sair");
+            System.out.print("Escolha: ");
+            opcao = sc.nextInt();
+            sc.nextLine();
+
+            switch (opcao) {
+                case 1:
+                    System.out.print("Nome: ");
+                    String nome = sc.nextLine();
+                    System.out.print("CPF: ");
+                    String cpf = sc.nextLine();
+                    System.out.print("Plano (prioritario/normal): ");
+                    String plano = sc.nextLine();
+                    adicionarPaciente(nome, cpf, plano);
+                    break;
+
+                case 2:
+                    Paciente p = chamarPaciente();
+                    if (p != null) {
+                        p.iniciarAtendimento();
+                        System.out.print("Tipo de consulta (consulta/exame): ");
+                        String tipo = sc.nextLine();
+                        p.fazerTriagem(tipo);
+                        System.out.println("Escolha o médico:");
+                        System.out.println("1 - Doutor Ratinhoo");
+                        System.out.println("2 - Doutora Ana Maria Braga");
+                        System.out.println("3 - Doutor Faustão");
+                        System.out.print("Opção: ");
+                        int med = sc.nextInt();
+                        sc.nextLine();
+
+                        switch (med) {
+                            case 1:
+                                p.escolherMedico("Doutor Ratinhoo");
+                                break;
+                            case 2:
+                                p.escolherMedico("Doutora Ana Maria Braga");
+                                break;
+                            case 3:
+                                p.escolherMedico("Doutor Faustão");
+                                break;
+                            default:
+                                p.escolherMedico("Não escolhido");
+                        }
+                        System.out.println("\n em atendimewnto:");
+                        System.out.println(p);
+
+                        System.out.print("Encerrar atendimento? (sim/nao): ");
+                        String resp = sc.nextLine();
+
+                        if (resp.equalsIgnoreCase("sim")) {
+                            p.encerrar();
+                            System.out.println("\n Atendimento finalizado:");
+                            System.out.println(p);
+                        }
+                    }
+                    break;
+            }
+        } while (opcao != 3);
+        sc.close();
+    }
+}
