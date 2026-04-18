@@ -88,7 +88,7 @@ public class FilaAtendimento {
         Scanner sc = new Scanner(System.in);
         int opcao;
         do {
-            System.out.println("\n=== SISTEMA DE ATENDIMENTO ===");
+            System.out.println("\n-- SISTEMA DE ATENDIMENTO --");
             System.out.println("1 - Novo Paciente");
             System.out.println("2 - Chamar Paciente");
             System.out.println("3 - Sair");
