@@ -8,12 +8,14 @@ class Paciente {
     String tipoConsulta;
     String medico;
     String status;
+    int idade;
 
-    public Paciente(String senha, String nome, String cpf, String plano) {
+    public Paciente(String senha, String nome, String cpf, String plano, int idade) {
         this.senha = senha;
         this.nome = nome;
         this.cpf = cpf;
         this.plano = plano;
+        this.idade = idade;
         this.tipoConsulta = "consulta nao definida";
         this.medico = "medico nao definido";
         this.status = "Aguardando";
@@ -37,23 +39,27 @@ class Paciente {
                 "Nome: " + nome + "\n" +
                 "CPF: " + cpf + "\n" +
                 "Plano: " + plano + "\n" +
+                "Idade: " + idade + "\n" +
                 "Consulta: " + tipoConsulta + "\n" +
                 "Médico: " + medico + "\n" +
                 "Status: " + status + "\n" +
                 "-";
     }
 }
+
 public class FilaAtendimento {
 
     static Queue<Paciente> filaPrioritaria = new LinkedList<>();
-    static Queue<Paciente> filaNormal = new LinkedList<>();
+    static PriorityQueue<Paciente> filaNormal = new PriorityQueue<>(
+            (p1,p2)-> Integer.compare(p2.idade, p1.idade)
+    );
     static int contador = 1;
     public static String gerarSenha() {
         return String.format("A%03d", contador++);
     }
 
-    public static void adicionarPaciente(String nome, String cpf, String plano) {
-        Paciente p = new Paciente(gerarSenha(), nome, cpf, plano);
+    public static void adicionarPaciente(String nome, String cpf, String plano, int idade) {
+        Paciente p = new Paciente(gerarSenha(), nome, cpf, plano, idade);
 
         if (plano.equalsIgnoreCase("prioritario")) {
             filaPrioritaria.add(p);
@@ -62,6 +68,7 @@ public class FilaAtendimento {
         }
         System.out.println("Paciente adicionado: " + p.senha);
     }
+
     public static Paciente chamarPaciente() {
         Paciente p;
 
@@ -81,10 +88,10 @@ public class FilaAtendimento {
         Scanner sc = new Scanner(System.in);
         int opcao;
         do {
-            System.out.println("\n-- SISTEMA DE ATENDIMENTO --");
-            System.out.println("1-Novo Paciente");
-            System.out.println("2-Chamar Paciente");
-            System.out.println("3-Sair");
+            System.out.println("\n=== SISTEMA DE ATENDIMENTO ===");
+            System.out.println("1 - Novo Paciente");
+            System.out.println("2 - Chamar Paciente");
+            System.out.println("3 - Sair");
             System.out.print("Escolha: ");
             opcao = sc.nextInt();
             sc.nextLine();
@@ -95,10 +102,14 @@ public class FilaAtendimento {
                     String nome = sc.nextLine();
                     System.out.print("CPF: ");
                     String cpf = sc.nextLine();
+                    System.out.print("Idade: ");
+                    int idade = sc.nextInt();
+                    sc.nextLine();
                     System.out.print("Plano (prioritario/normal): ");
                     String plano = sc.nextLine();
-                    adicionarPaciente(nome, cpf, plano);
+                    adicionarPaciente(nome, cpf, plano, idade);
                     break;
+
                 case 2:
                     Paciente p = chamarPaciente();
                     if (p != null) {
