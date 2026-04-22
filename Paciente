@@ -1,0 +1,76 @@
+
+package model;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class Paciente {
+    private String senha;
+    private String nome;
+    private String cpf;
+    private String plano;
+    private String tipoConsulta;
+    private String medico;
+    private String status;
+    private int idade;
+
+    private List<Etapa> historico = new ArrayList<>();
+
+    public Paciente(String senha, String nome, String cpf, String plano, int idade) {
+        this.senha = senha;
+        this.nome = nome;
+        this.cpf = cpf;
+        this.plano = plano;
+        this.idade = idade;
+        this.tipoConsulta = "Não definida";
+        this.medico = "Não definido";
+        this.status = "Aguardando";
+
+        historico.add(new Etapa("Paciente chegou na unidade"));
+    }
+
+    public void iniciarAtendimento() {
+        this.status = "Em atendimento";
+        historico.add(new Etapa("Atendimento iniciado"));
+    }
+
+    public void fazerTriagem(String tipo) {
+        this.tipoConsulta = tipo;
+        historico.add(new Etapa("Triagem realizada: " + tipo));
+    }
+
+    public void escolherMedico(String medico) {
+        this.medico = medico;
+        historico.add(new Etapa("Consulta com " + medico));
+    }
+
+    public void registrarExame(String exame) {
+        historico.add(new Etapa("Exame realizado: " + exame));
+    }
+
+    public void encerrar() {
+        this.status = "Finalizado";
+        historico.add(new Etapa("Atendimento encerrado"));
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("\n--\n");
+        sb.append("Senha: ").append(senha).append("\n");
+        sb.append("Nome: ").append(nome).append("\n");
+        sb.append("CPF: ").append(cpf).append("\n");
+        sb.append("Plano: ").append(plano).append("\n");
+        sb.append("Idade: ").append(idade).append("\n");
+        sb.append("Consulta: ").append(tipoConsulta).append("\n");
+        sb.append("Médico: ").append(medico).append("\n");
+        sb.append("Status: ").append(status).append("\n");
+
+        sb.append("\nHistórico de atendimento:\n");
+        for (Etapa e : historico) {
+            sb.append(" - ").append(e).append("\n");
+        }
+        return sb.toString();
+    }
+}
