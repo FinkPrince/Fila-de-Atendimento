@@ -1,0 +1,61 @@
+package br.com.atendimento;
+
+import model.Paciente;
+import service.FilaAtendimento;
+
+import java.util.Scanner;
+
+public class Main {
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        FilaAtendimento fila = new FilaAtendimento();
+
+        int opcao;
+
+        do {
+            System.out.println("\n-- Sistema de Filas de Atendimento --");
+            System.out.println("1 Novo Paciente");
+            System.out.println("2 Chamar Paciente");
+            System.out.println("3 Sair");
+            System.out.print("Sua Escolha: ");
+            opcao = sc.nextInt();
+            sc.nextLine();
+
+            switch (opcao) {
+                case 1:
+                    System.out.print("Nome: ");
+                    String nome = sc.nextLine();
+
+                    System.out.print("CPF: ");
+                    String cpf = sc.nextLine();
+
+                    System.out.print("Idade: ");
+                    int idade = sc.nextInt();
+                    sc.nextLine();
+
+                    System.out.print("Plano (prioritario/normal): ");
+                    String plano = sc.nextLine();
+
+                    Paciente p = new Paciente(
+                            fila.gerarSenha(), nome, cpf, plano, idade
+                    );
+
+                    fila.adicionarPaciente(p);
+                    break;
+
+                case 2:
+                    Paciente paciente = fila.chamarPaciente();
+                    if (paciente != null) {
+                        System.out.println(paciente);
+                    } else {
+                        System.out.println("Fila vazia!");
+                    }
+                    break;
+            }
+
+        } while (opcao != 3);
+
+        sc.close();
+    }
+}
