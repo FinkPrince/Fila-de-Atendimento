@@ -1,5 +1,22 @@
 import java.util.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
+//etapas mais organizadinha=)
+class Etapa {
+    String descricao;
+    LocalDateTime horario;
+
+    public Etapa(String descricao) {
+        this.descricao = descricao;
+        this.horario = LocalDateTime.now();
+    }
+    public String toString() {
+        DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+        return descricao + " - " + horario.format(formato);
+    }
+}
+// paciente com tudo ja
 class Paciente {
     String senha;
     String nome;
@@ -10,50 +27,70 @@ class Paciente {
     String status;
     int idade;
 
+    List<Etapa> historico = new ArrayList<>();
+
     public Paciente(String senha, String nome, String cpf, String plano, int idade) {
         this.senha = senha;
         this.nome = nome;
         this.cpf = cpf;
         this.plano = plano;
         this.idade = idade;
-        this.tipoConsulta = "consulta nao definida";
-        this.medico = "medico nao definido";
+        this.tipoConsulta = "Não definida";
+        this.medico = "Não definido";
         this.status = "Aguardando";
-    }
-    public void fazerTriagem(String tipo) {
-        this.tipoConsulta = tipo;
-    }
-    public void escolherMedico(String medico) {
-        this.medico = medico;
+
+        historico.add(new Etapa("Paciente chegou na unidade"));
     }
     public void iniciarAtendimento() {
         this.status = "Em atendimento";
+        historico.add(new Etapa("Atendimento iniciado"));
+    }
+    public void fazerTriagem(String tipo) {
+        this.tipoConsulta = tipo;
+        historico.add(new Etapa("Triagem realizada: " + tipo));
+    }
+    public void escolherMedico(String medico) {
+        this.medico = medico;
+        historico.add(new Etapa("Consulta com " + medico));
+    }
+    public void registrarExame(String exame) {
+        historico.add(new Etapa("Exame realizado: " + exame));
     }
     public void encerrar() {
         this.status = "Finalizado";
+        historico.add(new Etapa("Atendimento encerrado"));
     }
 
     public String toString() {
-        return "\n-\n" +
-                "Senha: " + senha + "\n" +
-                "Nome: " + nome + "\n" +
-                "CPF: " + cpf + "\n" +
-                "Plano: " + plano + "\n" +
-                "Idade: " + idade + "\n" +
-                "Consulta: " + tipoConsulta + "\n" +
-                "Médico: " + medico + "\n" +
-                "Status: " + status + "\n" +
-                "-";
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("\n----------------------\n");
+        sb.append("Senha: ").append(senha).append("\n");
+        sb.append("Nome: ").append(nome).append("\n");
+        sb.append("CPF: ").append(cpf).append("\n");
+        sb.append("Plano: ").append(plano).append("\n");
+        sb.append("Idade: ").append(idade).append("\n");
+        sb.append("Consulta: ").append(tipoConsulta).append("\n");
+        sb.append("Médico: ").append(medico).append("\n");
+        sb.append("Status: ").append(status).append("\n");
+
+        sb.append("\nHistórico de atendimento:\n");
+        for (Etapa e : historico) {
+            sb.append(" - ").append(e).append("\n");
+        }
+        return sb.toString();
     }
 }
-
 public class FilaAtendimento {
 
     static Queue<Paciente> filaPrioritaria = new LinkedList<>();
+
     static PriorityQueue<Paciente> filaNormal = new PriorityQueue<>(
-            (p1,p2)-> Integer.compare(p2.idade, p1.idade)
+            (p1, p2) -> Integer.compare(p2.idade, p1.idade)
     );
+
     static int contador = 1;
+
     public static String gerarSenha() {
         return String.format("A%03d", contador++);
     }
@@ -66,9 +103,8 @@ public class FilaAtendimento {
         } else {
             filaNormal.add(p);
         }
-        System.out.println("Paciente adicionado: " + p.senha);
+        System.out.println("Paciente adicionado com senha: " + p.senha);
     }
-
     public static Paciente chamarPaciente() {
         Paciente p;
 
@@ -84,15 +120,17 @@ public class FilaAtendimento {
         }
         return p;
     }
+
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         int opcao;
+
         do {
-            System.out.println("\n-- SISTEMA DE ATENDIMENTO --");
-            System.out.println("1 - Novo Paciente");
-            System.out.println("2 - Chamar Paciente");
-            System.out.println("3 - Sair");
-            System.out.print("Escolha: ");
+            System.out.println("\n-- Sistema de Filas de Atendimento --");
+            System.out.println("1 Novo Paciente");
+            System.out.println("2 Chamar Paciente");
+            System.out.println("3 Sair");
+            System.out.print("Sua Escolha: ");
             opcao = sc.nextInt();
             sc.nextLine();
 
@@ -100,27 +138,34 @@ public class FilaAtendimento {
                 case 1:
                     System.out.print("Nome: ");
                     String nome = sc.nextLine();
+
                     System.out.print("CPF: ");
                     String cpf = sc.nextLine();
+
                     System.out.print("Idade: ");
                     int idade = sc.nextInt();
                     sc.nextLine();
+
                     System.out.print("Plano (prioritario/normal): ");
                     String plano = sc.nextLine();
+
                     adicionarPaciente(nome, cpf, plano, idade);
                     break;
 
                 case 2:
                     Paciente p = chamarPaciente();
+
                     if (p != null) {
                         p.iniciarAtendimento();
+
                         System.out.print("Tipo de consulta (consulta/exame): ");
                         String tipo = sc.nextLine();
                         p.fazerTriagem(tipo);
-                        System.out.println("Escolha o médico:");
-                        System.out.println("1 - Doutor Ratinhoo");
-                        System.out.println("2 - Doutora Ana Maria Braga");
-                        System.out.println("3 - Doutor Faustão");
+
+                        System.out.println("Escolha o médico que tu queres:");
+                        System.out.println("1 Doutor Ratinhoo");
+                        System.out.println("2 Doutora Ana Maria Braga");
+                        System.out.println("3 Doutor Faustão");
                         System.out.print("Opção: ");
                         int med = sc.nextInt();
                         sc.nextLine();
@@ -138,7 +183,17 @@ public class FilaAtendimento {
                             default:
                                 p.escolherMedico("Não escolhido");
                         }
-                        System.out.println("\n em atendimewnto:");
+
+                        // registrar tudo ou nn
+                        System.out.print("Deseja registrar exame? (sim/nao): ");
+                        String respExame = sc.nextLine();
+
+                        if (respExame.equalsIgnoreCase("sim")) {
+                            System.out.print("Nome do exame: ");
+                            String exame = sc.nextLine();
+                            p.registrarExame(exame);
+                        }
+                        System.out.println("\nPaciente em atendimento:");
                         System.out.println(p);
 
                         System.out.print("Encerrar atendimento? (sim/nao): ");
@@ -146,13 +201,15 @@ public class FilaAtendimento {
 
                         if (resp.equalsIgnoreCase("sim")) {
                             p.encerrar();
-                            System.out.println("\n Atendimento finalizado:");
+                            System.out.println("\nAtendimento finalizado:");
                             System.out.println(p);
                         }
                     }
                     break;
             }
+
         } while (opcao != 3);
+
         sc.close();
     }
 }
