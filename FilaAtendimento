@@ -1,0 +1,36 @@
+import model.Paciente;
+package br.com.atendimento.service;
+
+import java.util.LinkedList;
+import java.util.PriorityQueue;
+import java.util.Queue;
+
+public class FilaAtendimento {
+
+    private Queue<Paciente> filaPrioritaria = new LinkedList<>();
+
+    private PriorityQueue<Paciente> filaNormal = new PriorityQueue<>(
+            (p1, p2) -> Integer.compare(p2.getIdade(), p1.getIdade())
+    );
+
+    private int contador = 1;
+
+    public String gerarSenha() {
+        return String.format("A%03d", contador++);
+    }
+
+    public void adicionarPaciente(Paciente p) {
+        if (p.getPlano().equalsIgnoreCase("prioritario")) {
+            filaPrioritaria.add(p);
+        } else {
+            filaNormal.add(p);
+        }
+    }
+
+    public Paciente chamarPaciente() {
+        if (!filaPrioritaria.isEmpty()) {
+            return filaPrioritaria.poll();
+        }
+        return filaNormal.poll();
+    }
+}
